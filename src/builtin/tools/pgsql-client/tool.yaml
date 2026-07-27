@@ -1,0 +1,50 @@
+name: pgsql-client
+description: Run PostgreSQL queries by preferring native psql and falling back to the local bundled psql-go client in this tool directory.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - ./run.py
+arguments:
+  - name: query
+    type: string
+    description: SQL query string to execute
+    required: false
+  - name: file
+    type: string
+    description: SQL file path or - for stdin
+    required: false
+  - name: host
+    type: string
+    description: PostgreSQL host override
+    required: false
+  - name: port
+    type: string
+    description: PostgreSQL port override
+    required: false
+  - name: database
+    type: string
+    description: PostgreSQL database name
+    required: false
+  - name: user
+    type: string
+    description: PostgreSQL user
+    required: false
+  - name: password
+    type: string
+    description: PostgreSQL password
+    required: false
+  - name: sslMode
+    type: string
+    description: PGSSLMODE override
+    required: false
+  - name: passFile
+    type: string
+    description: Path to pgpass.conf; defaults to ./pgpass.conf in this tool directory
+    required: false
+  - name: tuplesOnly
+    type: string
+    description: true to request tuple-only output
+    required: false
+    defaultValue: "false"

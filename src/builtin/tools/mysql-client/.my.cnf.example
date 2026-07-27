@@ -1,0 +1,10 @@
+# MySQL client configuration file
+# Copy to ~/.my.cnf (Linux) or %USERPROFILE%\.my.cnf (Windows)
+# Or set MYSQL_DEFAULTS_FILE=/path/to/.my.cnf
+
+[client]
+host=localhost
+port=3306
+user=root
+password=secret
+# default-character-set=utf8mb4

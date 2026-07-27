@@ -1,0 +1,43 @@
+name: youtube-transcript-and-summarize
+description: 获取一个或多个 YouTube 视频字幕，并基于字幕内容生成结构化摘要。
+autoExecuteAllowed: true
+arguments:
+  - name: input
+    type: string
+    description: Single YouTube URL or video ID
+    required: true
+  - name: inputs
+    type: string
+    description: Multiple YouTube URLs or IDs
+    required: false
+  - name: languages
+    type: string
+    description: Preferred languages
+    defaultValue: "zh-Hans,zh,en,ja"
+  - name: max_chars_per_transcript
+    type: string
+    description: Max chars per transcript
+    defaultValue: "12000"
+
+steps:
+  - id: fetch_transcript
+    type: tool
+    toolName: youtube-transcript
+    arguments:
+      input: "${input.input}"
+      inputs: "${input.inputs}"
+      languages: "${input.languages}"
+      output_mode: "file-path"
+      include_transcript_text: "false"
+      max_chars_per_transcript: "${input.max_chars_per_transcript}"
+    outputKey: transcript_path
+
+  - id: summarize
+    type: tool
+    toolName: llm
+    arguments:
+      promptFile: "${transcript_path}"
+      provider: "${provider}"
+      model: "${model}"
+      systemPrompt: "You are a helpful assistant specializing in video content summarization. 请根据提供的 YouTube 视频字幕内容生成结构化摘要。摘要要求：1. 只根据实际拿到的字幕内容总结。2. 不编造字幕中不存在的信息。3. 输出结构包含 [Overview], [Main Ideas], [Per Video], [Notes]。"
+    outputKey: summary

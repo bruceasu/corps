@@ -1,0 +1,22 @@
+name: read-file
+description: Read a local text file and return its content.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--path"
+    - "${path}"
+    - "--max-chars"
+    - "${maxChars}"
+arguments:
+  - name: path
+    type: string
+    description: Path to the local file
+    required: true
+  - name: maxChars
+    type: number
+    description: Maximum number of characters to keep
+    required: false
+    defaultValue: "8000"

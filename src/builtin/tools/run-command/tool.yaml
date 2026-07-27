@@ -1,0 +1,15 @@
+name: run-command
+description: Execute a shell command with 30-second timeout.
+autoExecuteAllowed: false
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--command"
+    - "${command}"
+arguments:
+  - name: command
+    type: string
+    description: Shell command
+    required: true

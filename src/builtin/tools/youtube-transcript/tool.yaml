@@ -1,0 +1,101 @@
+name: youtube-transcript
+description: Fetch YouTube transcripts for one or more videos, playlists, or channel video pages with local cache and transcript output files.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--input"
+    - "${input}"
+    - "--inputs"
+    - "${inputs}"
+    - "--inputs_file"
+    - "${inputs_file}"
+    - "--languages"
+    - "${languages}"
+    - "--output_dir"
+    - "${output_dir}"
+    - "--cache_file"
+    - "${cache_file}"
+    - "--error_log"
+    - "${error_log}"
+    - "--workers"
+    - "${workers}"
+    - "--retries"
+    - "${retries}"
+    - "--use_cache"
+    - "${use_cache}"
+    - "--output_mode"
+    - "${output_mode}"
+    - "--include_transcript_text"
+    - "${include_transcript_text}"
+    - "--max_chars_per_transcript"
+    - "${max_chars_per_transcript}"
+    - "--dry_run"
+    - "${dry_run}"
+arguments:
+  - name: input
+    type: string
+    description: Single YouTube URL or 11-character video ID
+    required: false
+  - name: inputs
+    type: string
+    description: Multiple YouTube URLs or IDs separated by commas or newlines
+    required: false
+  - name: inputs_file
+    type: string
+    description: Text file containing one YouTube URL or video ID per line
+    required: false
+  - name: languages
+    type: string
+    description: Preferred transcript languages, comma-separated
+    required: false
+    defaultValue: zh-Hans,zh,en,ja
+  - name: output_dir
+    type: string
+    description: Transcript output directory; defaults to the local output directory
+    required: false
+  - name: cache_file
+    type: string
+    description: Cache JSON path; defaults to the local cache.json
+    required: false
+  - name: error_log
+    type: string
+    description: Error log path; defaults to the local error.log
+    required: false
+  - name: workers
+    type: string
+    description: Parallel worker count
+    required: false
+    defaultValue: "8"
+  - name: retries
+    type: string
+    description: Transcript fetch retry count per video
+    required: false
+    defaultValue: "3"
+  - name: use_cache
+    type: string
+    description: true to skip video IDs already present in cache.json
+    required: false
+    defaultValue: "true"
+  - name: output_mode
+    type: string
+    description: json for structured output or plain-text for merged transcript text only
+    required: false
+    defaultValue: json
+  - name: include_transcript_text
+    type: string
+    description: true to inline transcript text into the JSON output for downstream summarization
+    required: false
+    defaultValue: "true"
+  - name: max_chars_per_transcript
+    type: string
+    description: Maximum number of transcript characters to inline per video
+    required: false
+    defaultValue: "12000"
+  - name: dry_run
+    type: string
+    description: true to print the resolved execution plan without calling external libraries
+    required: false
+    defaultValue: "false"

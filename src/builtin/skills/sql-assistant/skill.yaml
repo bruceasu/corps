@@ -1,0 +1,32 @@
+name: sql-assistant
+description: "按需加载 Schema 的智能 SQL 助手，能够自动识别相关表并执行查询。"
+triggers:
+  - "query database"
+  - "sql"
+  - "mysql"
+  - "table structure"
+  - "schema"
+  - "数据库查询"
+autoExecuteAllowed: true
+arguments:
+  - name: prompt
+    type: string
+    description: "你想要查询的内容（自然语言描述）"
+    required: true
+steps:
+  - id: agent_loop
+    type: agent
+    userPrompt: |
+      你是一个专业的 SQL 专家。请根据以下要求完成任务：
+      
+      任务目标：${prompt}
+      
+      执行策略（Skills Pattern）：
+      1. 如果你还不清楚相关的表结构，请先调用 `sql-schema-loader` 获取必要的信息。
+      2. 获取 Schema 后，编写标准的 MySQL 语句。
+      3. 调用 `mysql-client` 执行该 SQL。
+      4. 最后给出易于理解的中文总结。
+      
+      注意：不要盲目猜测列名。
+    arguments:
+      allowedTools: "sql-schema-loader,mysql-client,llm"

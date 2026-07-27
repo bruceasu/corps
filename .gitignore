@@ -1,0 +1,11 @@
+.vscode
+pgpass.conf
+my.cnf
+mysql.cnf
+.env
+.env.*
+__pycache__/
+.venv
+python/
+.pyc
+**/__pycache__/

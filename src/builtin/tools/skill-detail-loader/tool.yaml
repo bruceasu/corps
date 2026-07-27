@@ -1,0 +1,15 @@
+name: skill-detail-loader
+description: "加载指定技能（Skill）的详细文档和执行计划。当你需要了解某个技能的具体用法、参数或内部步骤时使用。"
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--name"
+    - "${name}"
+  autoExecuteAllowed: true
+arguments:
+  - name: name
+    type: string
+    description: "技能的名称 (例如: autonomous-fixer)"
+    required: true

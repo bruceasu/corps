@@ -1,0 +1,15 @@
+name: sql-schema-loader
+description: "获取数据库特定表的结构和元数据。当你需要编写 SQL 但不确定表结构时使用。"
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--tables"
+    - "${tables}"
+  autoExecuteAllowed: true
+arguments:
+  - name: tables
+    type: string
+    description: "需要查询的表名，多个表用逗号分隔（例如: users,orders）"
+    required: true

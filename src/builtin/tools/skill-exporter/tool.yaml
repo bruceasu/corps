@@ -1,0 +1,28 @@
+name: skill-exporter
+description: Export a skill into a standalone package with Python/Go runners.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--skill"
+    - "${skill}"
+    - "--output"
+    - "${output}"
+    - "--target"
+    - "${target}"
+arguments:
+  - name: skill
+    type: string
+    description: Name of the skill to export
+    required: true
+  - name: output
+    type: string
+    description: Output directory for the exported package
+    required: true
+  - name: target
+    type: string
+    description: Target runner language (python, go, or both)
+    required: false
+    defaultValue: python

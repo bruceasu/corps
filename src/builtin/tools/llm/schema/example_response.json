@@ -1,0 +1,22 @@
+{
+    "version": "1.0.0",
+    "status": "success",
+    "result": {
+        "items": [
+            {
+                "id": "a1",
+                "name": "示例项",
+                "score": 0.92
+            }
+        ]
+    },
+    "metadata": {
+        "provider": "openai",
+        "model": "gpt-4o-mini",
+        "promptLength": 42,
+        "hasSystemPrompt": true,
+        "format": "json",
+        "generatedAt": "2026-05-10T12:00:00Z"
+    },
+    "human_readable": "这是一个示例工具响应，主要结果在 result 字段。"
+}

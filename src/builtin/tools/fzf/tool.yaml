@@ -1,0 +1,14 @@
+name: fzf
+description: fzf fuzzy finder wrapper
+autoExecuteAllowed: false
+tool:
+  type: external-command
+  program: fzf
+  args:
+    - --preview
+    - "bat --style=numbers --color=always --line-range :500 {1}"
+  workingDirectory: ${toolHome}
+arguments:
+  - name: input
+    description: input text or file
+    required: false

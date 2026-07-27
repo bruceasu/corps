@@ -1,0 +1,30 @@
+name: list-files
+description: List files in a directory with optional glob filtering. Use this to explore project structure.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--path"
+    - "${path}"
+    - "--pattern"
+    - "${pattern}"
+    - "--limit"
+    - "${limit}"
+arguments:
+  - name: path
+    type: string
+    description: Directory to scan (e.g. src/main/java)
+    required: false
+    defaultValue: .
+  - name: pattern
+    type: string
+    description: Glob pattern to filter files (e.g. *.java or **/test/*.py)
+    required: false
+    defaultValue: "*"
+  - name: limit
+    type: number
+    description: Maximum number of files to return.
+    required: false
+    defaultValue: "100"

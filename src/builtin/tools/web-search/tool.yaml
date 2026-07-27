@@ -1,0 +1,29 @@
+name: web-search
+description: Search the web for official docs or error information and return compact results.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--query"
+    - "${query}"
+    - "--site"
+    - "${site}"
+    - "--limit"
+    - "${limit}"
+arguments:
+  - name: query
+    type: string
+    description: Search query
+    required: true
+  - name: site
+    type: string
+    description: Optional site restriction, for example docs.python.org
+    required: false
+    defaultValue: ""
+  - name: limit
+    type: number
+    description: Maximum number of search results
+    required: false
+    defaultValue: "5"

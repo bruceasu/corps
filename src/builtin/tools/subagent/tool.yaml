@@ -1,0 +1,48 @@
+name: subagent
+description: Delegate a complex sub-task to an autonomous sub-agent that can reason and use tools in multiple steps. Use this for tasks that require planning, research, or multiple tool calls.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--goal"
+    - "${goal}"
+    - "--system-prompt"
+    - "${systemPrompt}"
+    - "--max-steps"
+    - "${maxSteps}"
+    - "--allowed-tools"
+    - "${allowedTools}"
+    - "--provider"
+    - "${provider}"
+    - "--model"
+    - "${model}"
+arguments:
+  - name: goal
+    type: string
+    description: The complex task or goal for the sub-agent to achieve.
+    required: true
+  - name: systemPrompt
+    type: string
+    description: Optional instructions for the sub-agent's persona or constraints.
+    required: false
+    defaultValue: "You are a specialized sub-agent focused on achieving the given goal efficiently."
+  - name: maxSteps
+    type: integer
+    description: Maximum number of reasoning steps for the sub-agent.
+    required: false
+    defaultValue: 5
+  - name: allowedTools
+    type: string
+    description: Comma-separated list of tool names the sub-agent is allowed to use. Defaults to all common tools if empty.
+    required: false
+    defaultValue: "read-file,list-files,rg,edit-file,llm"
+  - name: provider
+    type: string
+    description: Optional provider override.
+    required: false
+  - name: model
+    type: string
+    description: Optional model override.
+    required: false

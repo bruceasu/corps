@@ -1,0 +1,21 @@
+name: write-file
+description: Write content to a file. Creates directories if needed.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--path"
+    - "${path}"
+    - "--content"
+    - "${content}"
+arguments:
+  - name: path
+    type: string
+    description: File path
+    required: true
+  - name: content
+    type: string
+    description: Complete file content
+    required: true

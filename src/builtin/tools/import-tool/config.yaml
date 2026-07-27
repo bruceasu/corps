@@ -1,0 +1,140 @@
+app:
+  base_dir: .
+
+# 命名数据库实例（支持多个同类型 DB）
+databases:
+  pg_local:
+    type: postgres
+    psql_path: psql
+    host: localhost
+    port: 5432
+    database: riskdb
+    user: postgres
+    pgpass_file: ./config/pgpass.conf
+
+  mysql_local:
+    type: mysql
+    mysql_path: mysql
+    host: localhost
+    port: 3306
+    database: riskdb
+    user: root
+    defaults_extra_file: ./config/mysql.cnf
+
+jobs:
+  - name: trade_snapshot
+    enabled: true
+    db: pg_local
+    target_table: risk_manage.trade_snapshot_data
+    staging_table_prefix: staging_trade_snapshot
+    copy_columns:
+      - import_date
+      - order_id
+      - ticket
+      - login
+      - symbol
+      - side
+      - volume
+      - volume_label
+      - open_time
+      - open_time_jst
+      - close_time_jst
+      - close_time
+      - hold_time
+      - hold_label
+      - open_price
+      - close_price
+      - profit
+      - swaps
+      - commission
+      - reason
+      - flag
+      - client_type
+      - business_type
+      - platform
+      - tick_1s_label
+      - tick_1s_rate
+      - tick_5s_label
+      - tick_5s_rate
+      - tick_10s_label
+      - tick_10s_rate
+      - tick_30s_label
+      - tick_30s_rate
+      - tick_60s_label
+      - tick_60s_rate
+      - tick_120s_label
+      - tick_120s_rate
+      - tick_profit_closedprofit_count
+    merge_sql_file: trade_snapshot_merge.sql
+
+  - name: trade_snapshot_no_tick
+    enabled: true
+    db: pg_local
+    target_table: risk_manage.trade_snapshot_data
+    staging_table_prefix: staging_trade_snapshot_no_tick
+    copy_columns:
+      - import_date
+      - order_id
+      - ticket
+      - login
+      - symbol
+      - side
+      - volume
+      - volume_label
+      - open_time
+      - open_time_jst
+      - close_time_jst
+      - close_time
+      - hold_time
+      - hold_label
+      - open_price
+      - close_price
+      - profit
+      - swaps
+      - commission
+      - reason
+      - flag
+      - client_type
+      - business_type
+      - platform
+    merge_sql_file: trade_snapshot_no_tick_merge.sql
+
+  - name: trades_statistics_snapshot
+    enabled: true
+    db: pg_local
+    target_table: risk_manage.trades_statistics_snapshot
+    staging_table_prefix: staging_trades_statistics_snapshot
+    copy_columns:
+      - platform
+      - business_type
+      - login
+      - symbol
+      - source_type
+      - region
+      - profit
+      - swap
+      - commission
+      - volume
+      - base_volume
+      - count
+      - ten_m_bucket_count
+      - tickprofitcount
+      - buy_pnl
+      - buy_base_volume
+      - buy_count
+      - sell_pnl
+      - sell_base_volume
+      - sell_count
+      - positive_pnl
+      - positive_base_volume
+      - positive_count
+      - negative_pnl
+      - negative_base_volume
+      - negative_count
+      - lotlabel_pnl_map
+      - lotlabel_base_volume_map
+      - lotlabel_count_map
+      - hold_label_pnl_map
+      - hold_label_base_map
+      - hold_label_count_map
+    merge_sql_file: trades_statistics_snapshot_merge.sql

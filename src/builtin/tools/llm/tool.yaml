@@ -1,0 +1,52 @@
+name: llm
+description: Call the configured AI provider explicitly from a skill or tool workflow.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--prompt"
+    - "${prompt}"
+    - "--prompt-file"
+    - "${promptFile}"
+    - "--system-prompt"
+    - "${systemPrompt}"
+    - "--provider"
+    - "${provider}"
+    - "--model"
+    - "${model}"
+    - "--format"
+    - "${format}"
+    - "--required-keys"
+    - "${requiredKeys}"
+arguments:
+  - name: prompt
+    type: string
+    description: The user-facing prompt to send to the model
+    required: false
+  - name: promptFile
+    type: string
+    description: Path to file containing the prompt
+    required: false
+  - name: systemPrompt
+    type: string
+    description: Optional system instruction prepended to the prompt
+    required: false
+  - name: provider
+    type: string
+    description: Optional provider override such as groq, openai, or ollama
+    required: false
+  - name: model
+    type: string
+    description: Optional model override
+    required: false
+  - name: format
+    type: string
+    description: Output format, one of text, yaml, or json
+    required: false
+    defaultValue: text
+  - name: requiredKeys
+    type: string
+    description: Optional comma-separated required keys for structured yaml/json output
+    required: false

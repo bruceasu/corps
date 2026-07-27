@@ -1,0 +1,17 @@
+name: rg
+description: Ripgrep search wrapper
+autoExecuteAllowed: false
+tool:
+  type: external-command
+  program: rg
+  args:
+    - --hidden
+    - --no-ignore-vcs
+    - --line-number
+    - --heading
+    - ${query}
+  workingDirectory: ${toolHome}
+arguments:
+  - name: query
+    description: search pattern
+    required: true

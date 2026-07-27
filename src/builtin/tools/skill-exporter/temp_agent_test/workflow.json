@@ -1,0 +1,41 @@
+{
+  "skill": {
+    "name": "autonomous-fixer",
+    "description": "自主代码修复智能体，能够自动阅读文件、分析问题并给出方案。",
+    "arguments": [
+      {
+        "name": "prompt",
+        "type": "string",
+        "description": "需要解决的问题描述",
+        "required": true
+      }
+    ],
+    "steps": [
+      {
+        "id": "agent_step",
+        "type": "agent",
+        "optional": false,
+        "outputKey": "agent_step",
+        "arguments": {
+          "allowedTools": "read-file,list-files,llm,web-search"
+        },
+        "executionMode": "manual-unsupported",
+        "manualReason": "Unsupported step type for automatic export."
+      }
+    ]
+  },
+  "tools": {},
+  "manualSteps": [
+    {
+      "id": "agent_step",
+      "type": "agent",
+      "optional": false,
+      "outputKey": "agent_step",
+      "arguments": {
+        "allowedTools": "read-file,list-files,llm,web-search"
+      },
+      "executionMode": "manual-unsupported",
+      "manualReason": "Unsupported step type for automatic export."
+    }
+  ]
+}

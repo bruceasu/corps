@@ -1,0 +1,63 @@
+name: generate-import-control-and-run
+description: |
+  Generate a YAML control file for one CSV and then run the bundled import-tool with that control file.
+detail: |
+  This skill combines the import-control-file-generator and import-tool to streamline the process of importing data from a CSV file.
+  It first generates a control file based on the provided CSV path and import date,
+  and then executes the import using that control file. This allows for a more efficient workflow when dealing with data imports,
+  especially when you want to validate the control file generation and import execution in one step.
+example: |
+  To generate a control file for a CSV located at /data/users.csv with an import date of 2024-01-01 and then run the import, you can use the following input:
+  
+  {
+    "job": "userImportJob",
+    "csvPath": "/data/users.csv",
+    "importDate": "2024-01-01",
+    "dryRun": "false"
+  }
+autoExecuteAllowed: true
+arguments:
+  - name: job
+    type: string
+    description: Job name from import-tool config.yaml
+    required: false
+  - name: csvPath
+    type: string
+    description: Source CSV path
+    required: true
+  - name: importDate
+    type: string
+    description: Import date in yyyy-MM-dd format
+    required: true
+  - name: output
+    type: string
+    description: Optional output control file path
+    required: false
+  - name: dryRun
+    type: string
+    description: true to validate and print the execution plan only
+    required: false
+    defaultValue: "false"
+  - name: dbRef
+    type: string
+    description: Database reference from import-tool config.yaml
+    required: false
+steps:
+  - id: generateControl
+    type: tool
+    toolName: import-control-file-generator
+    outputKey: controlFilePath
+    arguments:
+      job: ${input.job}
+      csvPath: ${input.csvPath}
+      importDate: ${input.importDate}
+      output: ${input.output}
+      dbRef: ${input.dbRef}
+  - id: runImport
+    type: tool
+    toolName: import-tool
+    outputKey: importResult
+    arguments:
+      command: run-one
+      file: ${controlFilePath}
+      dryRun: ${input.dryRun}

@@ -1,0 +1,126 @@
+name: playwright-ui-smoke-test
+description: Open a web page with playwright-cli, capture a snapshot and screenshot, then generate a concise UI smoke test report.
+autoExecuteAllowed: true
+arguments:
+  - name: url
+    type: string
+    description: Target page URL
+    required: true
+  - name: session
+    type: string
+    description: Named Playwright CLI session
+    required: false
+  - name: expectedText
+    type: string
+    description: Optional text or behavior expected to be visible on the page
+    required: false
+  - name: screenshotPath
+    type: string
+    description: Optional screenshot output path
+    required: false
+  - name: headed
+    type: string
+    description: true to run the browser in headed mode
+    required: false
+    defaultValue: "false"
+  - name: persistent
+    type: string
+    description: true to keep persistent session data
+    required: false
+    defaultValue: "false"
+  - name: extraArgs
+    type: string
+    description: Extra raw arguments passed to playwright-cli
+    required: false
+  - name: reportOutput
+    type: string
+    description: Optional markdown output path for the generated UI smoke report
+    required: false
+steps:
+  - id: openPage
+    type: tool
+    toolName: playwright-cli
+    outputKey: openResult
+    arguments:
+      action: open
+      url: ${input.url}
+      session: ${input.session}
+      headed: ${input.headed}
+      persistent: ${input.persistent}
+      extraArgs: ${input.extraArgs}
+      dryRun: false
+  - id: pageSnapshot
+    type: tool
+    toolName: playwright-cli
+    outputKey: snapshotResult
+    arguments:
+      action: snapshot
+      session: ${input.session}
+      dryRun: false
+  - id: pageScreenshot
+    type: tool
+    toolName: playwright-cli
+    outputKey: screenshotResult
+    arguments:
+      action: screenshot
+      session: ${input.session}
+      path: ${input.screenshotPath}
+      dryRun: false
+  - id: analysis
+    type: tool
+    toolName: llm
+    outputKey: report
+    arguments:
+      prompt: |
+        You are a senior QA automation engineer.
+        Based on the following Playwright CLI outputs, write a concise UI smoke test report.
+
+        Required output:
+        [Status]
+        Pass / Warning / Fail
+
+        [What Was Checked]
+        1. ...
+        2. ...
+
+        [Observations]
+        1. ...
+        2. ...
+
+        [Risks]
+        1. ...
+        2. ...
+
+        [Next Actions]
+        1. ...
+        2. ...
+
+        Rules:
+        - Use the snapshot output as the primary source of truth.
+        - Mention the expected text if it was provided.
+        - If the outputs are incomplete, say so explicitly.
+        - Do not invent UI elements that are not present in the snapshot.
+
+        Target URL:
+        ${input.url}
+
+        Expected text or behavior:
+        ${input.expectedText}
+
+        Open result:
+        ${openResult}
+
+        Snapshot result:
+        ${snapshotResult}
+
+        Screenshot result:
+        ${screenshotResult}
+  - id: closeSession
+    type: tool
+    toolName: playwright-cli
+    outputKey: closeResult
+    optional: true
+    arguments:
+      action: close
+      session: ${input.session}
+      dryRun: false

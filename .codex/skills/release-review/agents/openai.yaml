@@ -1,0 +1,3 @@
+interface:
+  display_name: "Release Review"
+  short_description: "Gate financial releases for schema, data, permissions, audit, rollback, and monitoring risk."

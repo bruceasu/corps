@@ -1,0 +1,29 @@
+name: search-engine
+description: Search multiple engines (DuckDuckGo, Google, Reddit, Grep.app, Wikipedia) and return results.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--query"
+    - "${query}"
+    - "--engine"
+    - "${engine}"
+    - "--limit"
+    - "${limit}"
+arguments:
+  - name: query
+    type: string
+    description: Search query
+    required: true
+  - name: engine
+    type: string
+    description: "Search engine to use: duckduckgo, google, reddit, grepapp, wikipedia"
+    required: false
+    defaultValue: "duckduckgo"
+  - name: limit
+    type: number
+    description: Maximum number of search results
+    required: false
+    defaultValue: "5"

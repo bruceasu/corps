@@ -1,0 +1,22 @@
+name: web-fetch
+description: Fetch the content of a web page for documentation or error analysis.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--url"
+    - "${url}"
+    - "--max-chars"
+    - "${maxChars}"
+arguments:
+  - name: url
+    type: string
+    description: Target URL
+    required: true
+  - name: maxChars
+    type: number
+    description: Maximum number of characters to keep
+    required: false
+    defaultValue: "8000"

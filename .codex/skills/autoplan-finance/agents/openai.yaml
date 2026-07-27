@@ -1,0 +1,3 @@
+interface:
+  display_name: "Autoplan Finance"
+  short_description: "Financial planning workflow orchestrator"

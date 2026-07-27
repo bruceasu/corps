@@ -1,0 +1,89 @@
+name: import-control-file-generator
+description: Generate YAML control files for the bundled import-tool from existing CSV files.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - ./run.py
+arguments:
+  - name: job
+    type: string
+    description: Job name from import-tool config.yaml
+    required: false
+  - name: csvPath
+    type: string
+    description: Source CSV path
+    required: true
+  - name: importDate
+    type: string
+    description: Import date in yyyy-MM-dd format
+    required: true
+  - name: output
+    type: string
+    description: Output control YAML path; defaults to <csvPath>.control.yaml
+    required: false
+  - name: targetTable
+    type: string
+    description: Target table override
+    required: false
+  - name: stagingTablePrefix
+    type: string
+    description: Staging table prefix override
+    required: false
+  - name: copyColumns
+    type: string
+    description: Comma-separated copy_columns list
+    required: false
+  - name: mergeSqlFile
+    type: string
+    description: Merge SQL template file name under import-tool/sql
+    required: false
+  - name: dbRef
+    type: string
+    description: Database reference from import-tool config.yaml
+    required: false
+  - name: sqlFile
+    type: string
+    description: Pre-generated SQL file path
+    required: false
+  - name: dbType
+    type: string
+    description: Inline database type, postgres or mysql
+    required: false
+  - name: dbPsqlPath
+    type: string
+    description: Inline psql path override
+    required: false
+  - name: dbMysqlPath
+    type: string
+    description: Inline mysql path override
+    required: false
+  - name: dbHost
+    type: string
+    description: Inline database host
+    required: false
+  - name: dbPort
+    type: string
+    description: Inline database port
+    required: false
+  - name: dbDatabase
+    type: string
+    description: Inline database name
+    required: false
+  - name: dbUser
+    type: string
+    description: Inline database user
+    required: false
+  - name: dbPgpassFile
+    type: string
+    description: Inline pgpass file path
+    required: false
+  - name: dbPgpassword
+    type: string
+    description: Inline PostgreSQL password
+    required: false
+  - name: dbDefaultsExtraFile
+    type: string
+    description: Inline MySQL defaults-extra-file path
+    required: false

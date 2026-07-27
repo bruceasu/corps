@@ -1,0 +1,125 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Tool/Skill Response Schema",
+    "description": "Standard schema for machine-readable Tool/Skill responses; aligns with function-call style outputs.",
+    "type": "object",
+    "properties": {
+        "version": {
+            "type": "string",
+            "description": "Schema version (semver-like)"
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "success",
+                "partial",
+                "error"
+            ],
+            "description": "Overall execution status"
+        },
+        "result": {
+            "type": [
+                "object",
+                "array",
+                "string",
+                "number",
+                "null"
+            ],
+            "description": "Primary machine-readable result (present for success/partial)"
+        },
+        "error": {
+            "type": [
+                "object",
+                "null"
+            ],
+            "description": "Error details when status is 'error' or 'partial'",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "details": {
+                    "type": [
+                        "object",
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "message"
+            ],
+            "additionalProperties": true
+        },
+        "metadata": {
+            "type": "object",
+            "description": "Optional runtime metadata useful for automation",
+            "properties": {
+                "provider": {
+                    "type": "string"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "promptLength": {
+                    "type": "integer"
+                },
+                "hasSystemPrompt": {
+                    "type": "boolean"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "generatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            },
+            "additionalProperties": true
+        },
+        "human_readable": {
+            "type": "string",
+            "description": "Optional human-facing text"
+        }
+    },
+    "required": [
+        "version",
+        "status"
+    ],
+    "oneOf": [
+        {
+            "properties": {
+                "status": {
+                    "const": "success"
+                }
+            },
+            "required": [
+                "result"
+            ]
+        },
+        {
+            "properties": {
+                "status": {
+                    "const": "partial"
+                }
+            },
+            "required": [
+                "result",
+                "error"
+            ]
+        },
+        {
+            "properties": {
+                "status": {
+                    "const": "error"
+                }
+            },
+            "required": [
+                "error"
+            ]
+        }
+    ],
+    "additionalProperties": false
+}

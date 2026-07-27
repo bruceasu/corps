@@ -1,0 +1,56 @@
+name: playwright-cli
+description: Run common Playwright CLI browser automation commands for UI inspection, screenshots, and smoke testing.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - ./run.py
+arguments:
+  - name: action
+    type: string
+    description: Playwright CLI action such as open, goto, snapshot, click, fill, type, press, screenshot, close, list, show, close-all, or kill-all
+    required: true
+  - name: url
+    type: string
+    description: URL for open or goto
+    required: false
+  - name: target
+    type: string
+    description: Target element ref, selector, or locator for click/fill/check/text-content style commands
+    required: false
+  - name: value
+    type: string
+    description: Input text or key value for fill, type, or press
+    required: false
+  - name: path
+    type: string
+    description: Optional output path for screenshot; defaults to the local output directory
+    required: false
+  - name: session
+    type: string
+    description: Named Playwright CLI session
+    required: false
+  - name: config
+    type: string
+    description: Optional playwright-cli config file path
+    required: false
+  - name: headed
+    type: string
+    description: true to launch headed mode when supported
+    required: false
+    defaultValue: "false"
+  - name: persistent
+    type: string
+    description: true to persist browser profile when supported
+    required: false
+    defaultValue: "false"
+  - name: extraArgs
+    type: string
+    description: Extra raw arguments appended to the underlying playwright-cli command
+    required: false
+  - name: dryRun
+    type: string
+    description: true to print the resolved execution plan without launching playwright-cli
+    required: false
+    defaultValue: "false"

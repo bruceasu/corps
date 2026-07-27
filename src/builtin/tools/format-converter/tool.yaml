@@ -1,0 +1,22 @@
+name: format-converter
+description: Convert various file formats (Docx, Pptx, Xlsx, PDF, etc.) to Markdown or Text using Pandoc and MS Office.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--input"
+    - "${input}"
+    - "--to"
+    - "${to}"
+arguments:
+  - name: input
+    type: string
+    description: Path to the input file
+    required: true
+  - name: to
+    type: string
+    description: "Target format (default: markdown). Supported: markdown, text"
+    required: false
+    defaultValue: "markdown"

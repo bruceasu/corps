@@ -1,0 +1,91 @@
+INSERT INTO ${target_table} (
+    ticket,
+    order_id,
+    login,
+    symbol,
+    side,
+    volume,
+    volume_label,
+    open_time,
+    open_time_jst,
+    close_time,
+    close_time_jst,
+    hold_time,
+    hold_label,
+    open_price,
+    close_price,
+    profit,
+    swaps,
+    commission,
+    reason,
+    flag,
+    client_type,
+    business_type,
+    platform,
+    import_date,
+    update_time
+)
+SELECT
+    ticket::BIGINT,
+    order_id::BIGINT,
+    login::VARCHAR(50),
+    symbol,
+    side,
+    volume::NUMERIC(18,6),
+    volume_label,
+    open_time::TIMESTAMP(3),
+    open_time_jst::TIMESTAMP(3),
+    close_time::TIMESTAMP(3),
+    close_time_jst::TIMESTAMP(3),
+    hold_time::bigint,
+    hold_label,
+    open_price::NUMERIC(18,6),
+    close_price::NUMERIC(18,6),
+    profit::NUMERIC(18,2),
+    swaps::NUMERIC(18,2),
+    commission::NUMERIC(18,2),
+    reason::VARCHAR(16),
+    flag,
+    client_type,
+    business_type,
+    platform,
+    import_date::DATE,
+    CURRENT_TIMESTAMP
+FROM (
+    SELECT *,
+        ROW_NUMBER() OVER (
+            PARTITION BY
+                import_date,
+                platform,
+                business_type,
+                ticket,
+                login,
+                symbol,
+                order_id
+            ORDER BY
+                login,
+                close_time DESC
+        ) AS rn
+    FROM ${staging_table}
+) s
+WHERE s.rn = 1
+ON CONFLICT (import_date, platform, business_type, ticket, login, symbol, order_id)
+DO UPDATE SET
+    side = EXCLUDED.side,
+    volume = EXCLUDED.volume,
+    volume_label = EXCLUDED.volume_label,
+    open_time = EXCLUDED.open_time,
+    open_time_jst = EXCLUDED.open_time_jst,
+    close_time = EXCLUDED.close_time,
+    close_time_jst = EXCLUDED.close_time_jst,
+    hold_time = EXCLUDED.hold_time,
+    hold_label = EXCLUDED.hold_label,
+    open_price = EXCLUDED.open_price,
+    close_price = EXCLUDED.close_price,
+    profit = EXCLUDED.profit,
+    swaps = EXCLUDED.swaps,
+    commission = EXCLUDED.commission,
+    reason = EXCLUDED.reason,
+    flag = EXCLUDED.flag,
+    client_type = EXCLUDED.client_type,
+    update_time = CURRENT_TIMESTAMP;

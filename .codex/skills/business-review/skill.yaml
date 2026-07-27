@@ -1,0 +1,11 @@
+name: business-review
+description: "Business value review workflow for financial admin and analytics product requests."
+triggers:
+  - "business value"
+  - "worth building"
+  - "requirement review"
+  - "cost-benefit"
+  - "roi"
+  - "业务评估"
+  - "值得做吗"
+steps: []

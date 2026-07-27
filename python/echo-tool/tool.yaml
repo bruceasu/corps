@@ -1,0 +1,22 @@
+name: echo-tool
+description: Echo rendered text with an optional prefix.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - "${toolHome}/run.py"
+    - "--text"
+    - "${text}"
+    - "--prefix"
+    - "${prefix}"
+arguments:
+  - name: text
+    type: string
+    description: Text to echo
+    required: true
+  - name: prefix
+    type: string
+    description: Optional prefix
+    required: false
+    defaultValue: ""

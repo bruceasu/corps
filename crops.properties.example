@@ -1,0 +1,23 @@
+provider=groq
+model=llama-3.1-8b-instant
+
+groq.api.key=your_groq_key
+groq.base.url=https://api.groq.com/openai/v1
+
+openai.api.key=
+openai.base.url=https://api.openai.com/v1
+
+ollama.base.url=http://localhost:11434
+
+app.home=C:/Users/yourname/.config/corps
+tools.dir=C:/Users/yourname/.config/corps/tools
+skills.dir=C:/Users/yourname/.config/corps/skills
+python.scripts.dir=C:/Users/yourname/.config/corps/python
+sessions.dir=C:/Users/yourname/.config/corps/sessions
+knowledge.dir=C:/Users/yourname/.config/corps/knowledge
+
+# Repository-local example for this workspace:
+# tools.dir=D:/03_projects/suk/corps/workspace/tools
+# python.scripts.dir=D:/03_projects/suk/corps/src/main/python
+#prompt.tool-dispatcher.file=
+#tool.external.whitelist=rg,grep,fzf,git

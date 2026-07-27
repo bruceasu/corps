@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Codex Fast",
+            "type": "shell",
+            "command": "codex --profile fast"
+        },
+        {
+            "label": "Codex Balanced",
+            "type": "shell",
+            "command": "codex --profile balanced"
+        },
+        {
+            "label": "Codex Architect",
+            "type": "shell",
+            "command": "codex --profile architect"
+        },
+        {
+            "label": "Codex Heavy",
+            "type": "shell",
+            "command": "codex --profile heavy"
+        }
+    ]
+}

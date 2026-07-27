@@ -1,0 +1,35 @@
+name: import-tool
+description: Run the bundled CSV import workflow with local PostgreSQL/MySQL client fallback and local config/sql resources.
+autoExecuteAllowed: true
+tool:
+  type: external-command
+  program: python
+  args:
+    - ./run.py
+arguments:
+  - name: command
+    type: string
+    description: scan or run-one
+    required: false
+    defaultValue: scan
+  - name: file
+    type: string
+    description: Control YAML file for run-one
+    required: false
+  - name: dir
+    type: string
+    description: Directory to scan for control YAML files
+    required: false
+  - name: workers
+    type: string
+    description: Parallel worker count for scan
+    required: false
+  - name: dryRun
+    type: string
+    description: true to validate and print the execution plan only
+    required: false
+    defaultValue: "false"
+  - name: config
+    type: string
+    description: Optional config.yaml path; defaults to the local bundled config.yaml
+    required: false
