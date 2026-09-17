@@ -2,6 +2,7 @@ import json
 import re
 from typing import Any, Dict, Optional, Callable
 from .model import WorkflowNode
+from _runtime.llm_runtime import StructuredOutputContract, validate_structured_output
 
 class NodeExecutor:
     def execute(self, node: WorkflowNode, context: Dict[str, Any]) -> Dict[str, Any]:
@@ -54,9 +55,21 @@ OR
 
             try:
                 raw_response = self.generate_llm_text_func(provider, model, f"{system_prompt}\n\n{current_prompt}")
-                # Strip code fences
-                cleaned = self._strip_fence(raw_response)
-                decision = json.loads(cleaned)
+                decision = validate_structured_output(
+                    raw_response,
+                    StructuredOutputContract(
+                        name="workflow agent decision",
+                        required_keys=["action", "reasoningSummary"],
+                        schema={
+                            "type": "object",
+                            "required": ["action", "reasoningSummary"],
+                            "properties": {
+                                "action": {"enum": ["tool_call", "final_answer"]},
+                                "reasoningSummary": {"type": "string"},
+                            },
+                        },
+                    ),
+                )
                 
                 action = decision.get("action")
                 reasoning = decision.get("reasoningSummary", "")
@@ -69,6 +82,8 @@ OR
 
                 if action == "final_answer":
                     final_answer = decision.get("finalAnswer", "")
+                    if not isinstance(final_answer, str):
+                        raise ValueError("final_answer requires a string finalAnswer")
                     trace_item["finalAnswer"] = final_answer
                     trace.append(trace_item)
                     
@@ -80,6 +95,8 @@ OR
                 if action == "tool_call":
                     tool_name = decision.get("toolName")
                     tool_input = decision.get("toolInput", {})
+                    if not isinstance(tool_name, str) or not isinstance(tool_input, dict):
+                        raise ValueError("tool_call requires string toolName and object toolInput")
                     
                     if tool_name not in allowed_tools:
                         observation = f"Error: Tool '{tool_name}' is not in the allowed list."

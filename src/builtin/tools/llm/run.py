@@ -19,7 +19,14 @@ def add_runtime_path() -> None:
         sys.path.insert(0, str(src_dir))
 
 add_runtime_path()
-from _runtime.llm_runtime import generate_llm_text
+from _runtime.llm_runtime import (
+    FallbackPolicy,
+    GenerationProfile,
+    LlmRequest,
+    StructuredOutputContract,
+    invoke_llm,
+    invoke_structured_llm,
+)
 from _runtime.tool_runtime import emit_result, failure, load_json, normalize_optional, required_keys_missing, strip_fence, success
 
 
@@ -122,6 +129,12 @@ def main() -> None:
     schema_file = normalize_optional(args.schema_file) or ""
     schema_inline = normalize_optional(args.schema) or ""
     require_schema = bool(args.require_schema)
+    schema_obj = None
+    if schema_inline:
+        schema_obj = json.loads(schema_inline)
+    elif schema_file:
+        with open(schema_file, "r", encoding="utf-8") as f:
+            schema_obj = json.load(f)
 
     # Enhance system prompt for structured output
     if output_format in ["json", "yaml"]:
@@ -135,27 +148,44 @@ def main() -> None:
             system_prompt = format_instruction
 
     try:
-        # Use unified runtime with rotation support
-        output = generate_llm_text(provider, model, prompt, system_prompt=system_prompt)
+        contract = None
+        if output_format == "json":
+            contract = StructuredOutputContract(
+                name="llm tool response",
+                required_keys=[key.strip() for key in required_keys.split(",") if key.strip()],
+                schema=schema_obj,
+            )
+        request = LlmRequest.from_prompt(
+            provider,
+            model,
+            prompt,
+            system_prompt=system_prompt,
+            profile=GenerationProfile(name="structured" if output_format != "text" else "text", structured_output=output_format != "text"),
+            fallback=FallbackPolicy(allow_rotation=provider == "rotation" or model == "rotation", max_retries=1),
+            output_contract=contract,
+        )
+        structured = None
+        if contract:
+            result, structured = invoke_structured_llm(request)
+        else:
+            result = invoke_llm(request)
+        output = result.text
 
         data = {
-            "provider": provider,
-            "model": model,
+            "provider": result.provider,
+            "model": result.model,
             "format": output_format,
+            "latencyMs": result.latency_ms,
+            "finishReason": result.finish_reason,
+            "usage": result.usage,
+            "requestId": result.request_id,
+            "retryTrace": result.retry_trace,
         }
 
         if output_format != "text":
-            structured = parse_structured(output, output_format, required_keys)
+            if output_format == "yaml":
+                structured = parse_structured(output, output_format, required_keys)
             data["structured"] = structured
-
-            # Schema validation
-            schema_obj = None
-            if schema_inline:
-                schema_obj = json.loads(schema_inline)
-            elif schema_file:
-                with open(schema_file, "r", encoding="utf-8") as f:
-                    schema_obj = json.load(f)
-
             if schema_obj:
                 errors = validate_against_schema(structured, schema_obj)
                 if errors:

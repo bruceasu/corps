@@ -3,7 +3,17 @@ import re
 from pathlib import Path
 from typing import Any, Tuple, Callable
 
-from _runtime.llm_runtime import generate_llm_text
+from _runtime.llm_runtime import GenerationProfile, LlmRequest, invoke_llm
+
+
+def _invoke_text(provider: str, model: str, content: str, system_prompt: str = "", profile: str = "text") -> str:
+    return invoke_llm(LlmRequest.from_prompt(
+        provider,
+        model,
+        content,
+        system_prompt=system_prompt,
+        profile=GenerationProfile(name=profile, temperature=0.7 if profile == "creative" else 0.0),
+    )).text
 
 def resolve_file_references(text: str, log_fn: Callable[[str, str], None] = None) -> str:
     """
@@ -67,30 +77,30 @@ def translate_text(provider: str, model: str, content: str, target_lang: str, is
 8. 不要保留原文，除非原文无法识别。
 9. 目标语言：{target_name}。"""
 
-    return generate_llm_text(provider, model, content, system_prompt=system_prompt)
+    return _invoke_text(provider, model, content, system_prompt)
 
 def fix_text(provider: str, model: str, content: str) -> str:
     system_prompt = "Fix all typos and casing and punctuation in this text, but preserve all new line characters. Return only the corrected text."
-    return generate_llm_text(provider, model, content, system_prompt=system_prompt)
+    return _invoke_text(provider, model, content, system_prompt)
 
 def summarize_text(provider: str, model: str, content: str) -> str:
     system_prompt = "Summarize the following text in 3 sentences. Return only the summary text."
-    return generate_llm_text(provider, model, content, system_prompt=system_prompt)
+    return _invoke_text(provider, model, content, system_prompt, "summary")
 
 def generate_snarky(provider: str, model: str, topic: str) -> str:
     system_prompt = "Generate a snarky paragraph with 3 sentences about the following topic. Return only the paragraph text."
-    return generate_llm_text(provider, model, topic, system_prompt=system_prompt)
+    return _invoke_text(provider, model, topic, system_prompt, "creative")
 
 def generate_session_summary_and_title(provider: str, model: str, transcript: str) -> Tuple[str, str]:
     summary_prompt = f"Please provide a concise summary of the following chat session (max 3 sentences):\n\n{transcript}"
-    summary = generate_llm_text(provider, model, summary_prompt)
+    summary = _invoke_text(provider, model, summary_prompt, profile="summary")
     
     title_prompt = f"Based on the following session transcript, generate a short, descriptive title (max 6 words) that captures the core problem or task. Output ONLY the title text.\n\n{transcript}"
-    ai_title = generate_llm_text(provider, model, title_prompt).strip().strip('"').strip("'")
+    ai_title = _invoke_text(provider, model, title_prompt, profile="summary").strip().strip('"').strip("'")
     
     return ai_title, summary
 
 def generate_session_title(provider: str, model: str, transcript: str) -> str:
     title_prompt = f"Based on the following session transcript, generate a short, descriptive title (max 6 words) that captures the core problem or task. Output ONLY the title text.\n\n{transcript}"
-    ai_title = generate_llm_text(provider, model, title_prompt).strip().strip('"').strip("'")
+    ai_title = _invoke_text(provider, model, title_prompt, profile="summary").strip().strip('"').strip("'")
     return ai_title

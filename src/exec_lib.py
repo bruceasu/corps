@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 from pathlib import Path
-from _runtime.llm_runtime import generate_llm_text
+from _runtime.llm_runtime import LlmRequest, invoke_llm
 
 try:
     from rich.console import Console
@@ -19,16 +19,13 @@ class ExecManager:
         provider = provider or os.getenv("CORPS_PROVIDER", "openai")
         model = model or os.getenv("CORPS_MODEL", "gpt-4o-mini")
         
-        final_prompt = prompt
-        if system:
-            final_prompt = f"system: {system}\nuser: {prompt}"
-
         if self.console:
             self.console.print("\n[italic dim]Thinking...[/]")
         else:
             print("\nThinking...")
 
-        response = generate_llm_text(provider, model, final_prompt)
+        result = invoke_llm(LlmRequest.from_prompt(provider, model, prompt, system_prompt=system or ""))
+        response = result.text
 
         if self.console:
             self.console.print(

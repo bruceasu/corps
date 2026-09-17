@@ -22,7 +22,14 @@ def add_runtime_path() -> None:
 add_runtime_path()
 
 from _runtime.tool_runtime import emit_result, failure, load_json, normalize_optional, parse_bool, parse_int, success, strip_fence  # noqa: E402
-from _runtime.llm_runtime import generate_llm_text  # noqa: E402
+from _runtime.llm_runtime import (  # noqa: E402
+    FallbackPolicy,
+    GenerationProfile,
+    LlmRequest,
+    StructuredOutputContract,
+    generate_llm_text,
+    invoke_structured_llm,
+)
 from _runtime.engine.parser import SkillParser  # noqa: E402
 from _runtime.engine.workflow_engine import WorkflowEngine  # noqa: E402
 
@@ -244,6 +251,16 @@ def build_tool_card(tool: dict[str, object]) -> dict[str, object]:
         "triggers": tool.get("triggers") if isinstance(tool.get("triggers"), list) else [],
         "requiredArgs": extract_arg_names(tool, required_only=True),
         "optionalArgs": extract_arg_names(tool, required_only=False),
+        "arguments": [
+            {
+                "name": str(arg.get("name") or "").strip(),
+                "type": str(arg.get("type") or "string").strip(),
+                "description": str(arg.get("description") or "").strip(),
+                "required": bool(arg.get("required")),
+            }
+            for arg in (tool.get("arguments") or [])
+            if isinstance(arg, dict) and str(arg.get("name") or "").strip()
+        ],
         "autoExecuteAllowed": bool(tool_spec.get("autoExecuteAllowed", False)) if isinstance(tool_spec, dict) else False,
         "toolType": str(tool_spec.get("type") or "").strip(),
         "execution": {
@@ -276,6 +293,8 @@ def build_candidate_card(candidate: dict[str, object]) -> dict[str, object]:
         "requiredArgs": required,
         "optionalArgs": optional,
         "complexity": candidate_complexity(candidate),
+        "triggers": candidate.get("triggers") if isinstance(candidate.get("triggers"), list) else [],
+        "arguments": candidate.get("arguments") if isinstance(candidate.get("arguments"), list) else [],
     }
     if kind == "tool":
         card["why"] = "atomic tool"
@@ -387,7 +406,29 @@ def dispatch_capability(user_instruction: str, tools_dir: Path, provider: str, m
     tools = list_tool_definitions(tools_dir)
     skills = list_skill_bundles(resolve_skills_dir())
     prompt = build_dispatch_prompt(user_instruction, tools, skills)
-    raw = generate_llm_text(provider, model, prompt)
+    contract = StructuredOutputContract(
+        name="dispatcher intent",
+        required_keys=["actionType", "name", "args", "confirm"],
+        schema={
+            "type": "object",
+            "required": ["actionType", "name", "args", "confirm"],
+            "properties": {
+                "actionType": {"enum": ["tool", "skill"]},
+                "name": {"type": "string"},
+                "args": {"type": "object"},
+                "confirm": {"type": "boolean"},
+            },
+        },
+    )
+    result, intent_value = invoke_structured_llm(LlmRequest.from_prompt(
+        provider,
+        model,
+        prompt,
+        profile=GenerationProfile(name="dispatch", structured_output=True),
+        fallback=FallbackPolicy(allow_rotation=provider == "rotation" or model == "rotation", max_retries=1),
+        output_contract=contract,
+    ))
+    raw = json.dumps(intent_value, ensure_ascii=False)
     intent = parse_dispatch_intent(raw)
     action_type = str(intent.get("actionType") or "tool").lower()
     name = str(intent.get("name") or "").strip()
